@@ -8,6 +8,23 @@ const editor = document.getElementById("editor");
 const noteList = document.getElementById("note-list");
 const saveStatus = document.getElementById("save-status");
 const searchInput = document.getElementById("search-input");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const menuBtn = document.getElementById("menu-btn");
+
+function isMobile() {
+  return window.innerWidth <= 768;
+}
+
+function openSidebar() {
+  sidebar.classList.add("open");
+  overlay.classList.add("show");
+}
+
+function closeSidebar() {
+  sidebar.classList.remove("open");
+  overlay.classList.remove("show");
+}
 
 function getTimestamp() {
   const now = new Date();
@@ -131,6 +148,7 @@ async function openNote(id) {
   hasUnsaved = false;
   saveStatus.textContent = "";
 
+  if (isMobile()) closeSidebar();
   renderNoteList();
 }
 
@@ -202,6 +220,12 @@ titleInput.addEventListener("blur", async () => {
 searchInput.addEventListener("input", () => renderNoteList());
 
 document.getElementById("new-note-btn").addEventListener("click", createNote);
+
+menuBtn.addEventListener("click", () => {
+  sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
+});
+
+overlay.addEventListener("click", closeSidebar);
 
 // Keyboard shortcuts
 document.addEventListener("keydown", (e) => {
