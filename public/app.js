@@ -38,7 +38,7 @@ async function ensureActiveNote() {
   const res = await fetch("/api/notes", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: "untitled" }),
+    body: JSON.stringify({ id: "新建笔记" }),
   });
   const data = await res.json();
   activeId = data.id;
@@ -114,7 +114,7 @@ function renderNoteList(filter) {
 
     const span = document.createElement("span");
     span.className = "note-title";
-    span.textContent = note.title || "untitled";
+    span.textContent = note.title || "新建笔记";
     item.appendChild(span);
 
     const del = document.createElement("button");
@@ -159,7 +159,7 @@ async function createNote() {
   const res = await fetch("/api/notes", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: "untitled" }),
+    body: JSON.stringify({ id: "新建笔记" }),
   });
   const data = await res.json();
 
@@ -188,7 +188,7 @@ async function deleteNote(id) {
 
 // --- Rename note ---
 async function renameNote(id, newTitle) {
-  const clean = newTitle.replace(/[^a-zA-Z0-9_\-一-鿿]/g, "_") || "untitled";
+  const clean = newTitle.replace(/[^a-zA-Z0-9_\-一-鿿]/g, "_") || "新建笔记";
   if (clean === id) return;
 
   const res = await fetch(`/api/notes/${encodeURIComponent(id)}`, {

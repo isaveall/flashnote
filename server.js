@@ -81,7 +81,7 @@ async function handler(req, res) {
   // POST /api/notes
   if (method === "POST" && url === "/api/notes") {
     const body = await getBody(req);
-    let id = body.id || "untitled";
+    let id = body.id || "新建笔记";
     let filePath = path.join(NOTES_DIR, id + ".md");
     let counter = 1;
     while (fs.existsSync(filePath)) {
@@ -108,7 +108,7 @@ async function handler(req, res) {
     const oldPath = path.join(NOTES_DIR, id + ".md");
     if (!fs.existsSync(oldPath)) return send(res, 404, { error: "not found" });
     const body = await getBody(req);
-    const newId = (body.title || "").replace(/[^a-zA-Z0-9_\-一-鿿]/g, "_") || "untitled";
+    const newId = (body.title || "").replace(/[^a-zA-Z0-9_\-一-鿿]/g, "_") || "新建笔记";
     const newPath = path.join(NOTES_DIR, newId + ".md");
     if (fs.existsSync(newPath) && id !== newId) return send(res, 409, { error: "already exists" });
     fs.renameSync(oldPath, newPath);
