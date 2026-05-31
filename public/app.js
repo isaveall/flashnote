@@ -143,7 +143,7 @@ function getTimestamp() {
   const dayStr = LUNAR_DAY[lunar.day - 1];
   const pad = n => String(n).padStart(2, "0");
   const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
-  return `作于${lunar.yearGanzhi}年${monthStr}月${dayStr}日 ${timeStr}`;
+  return `记于 ${lunar.yearGanzhi}年${monthStr}月${dayStr}日 ${timeStr}`;
 }
 
 // --- Auto-save ---
