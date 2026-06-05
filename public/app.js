@@ -227,6 +227,107 @@ async function renameNote(id, newTitle) {
   renderNoteList();
 }
 
+// --- Markdown toolbar ---
+function insertMD(type) {
+  const ta = editor;
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const text = ta.value;
+  const selected = text.slice(start, end);
+
+  const lineStart = text.lastIndexOf("\n", start - 1) + 1;
+  const lineEnd = text.indexOf("\n", end);
+  const actualLineEnd = lineEnd === -1 ? text.length : lineEnd;
+  const currentLine = text.slice(lineStart, actualLineEnd);
+
+  let replacement = "";
+  let cursorOffset = 0;
+  let selectFrom, selectTo;
+
+  switch (type) {
+    // --- Headings ---
+    case "h1": case "h2": case "h3": case "h4": case "h5": case "h6":
+      const level = parseInt(type[1]);
+      const prefix = "#".repeat(level) + " ";
+      replacement = prefix + (selected || currentLine.replace(/^#{1,6} /, ""));
+      ta.setSelectionRange(lineStart, actualLineEnd);
+      break;
+
+    // --- Inline formatting ---
+    case "bold":
+      replacement = "**" + (selected || "粗体文字") + "**";
+      if (!selected) { selectFrom = start + 2; selectTo = start + 6; }
+      break;
+    case "italic":
+      replacement = "*" + (selected || "斜体文字") + "*";
+      if (!selected) { selectFrom = start + 1; selectTo = start + 5; }
+      break;
+    case "strike":
+      replacement = "~~" + (selected || "删除文字") + "~~";
+      if (!selected) { selectFrom = start + 2; selectTo = start + 6; }
+      break;
+    case "code":
+      replacement = "`" + (selected || "代码") + "`";
+      if (!selected) { selectFrom = start + 1; selectTo = start + 3; }
+      break;
+
+    // --- Block elements ---
+    case "quote":
+      replacement = "> " + (selected || currentLine.replace(/^> ?/, ""));
+      ta.setSelectionRange(lineStart, actualLineEnd);
+      break;
+    case "ul":
+      replacement = "- " + (selected || currentLine.replace(/^- /, ""));
+      ta.setSelectionRange(lineStart, actualLineEnd);
+      break;
+    case "ol":
+      replacement = "1. " + (selected || currentLine.replace(/^\d+\. /, ""));
+      ta.setSelectionRange(lineStart, actualLineEnd);
+      break;
+    case "task":
+      replacement = "- [ ] " + (selected || currentLine.replace(/^- \[[ x]\] /, ""));
+      ta.setSelectionRange(lineStart, actualLineEnd);
+      break;
+
+    // --- Misc ---
+    case "hr":
+      replacement = (start > 0 && text[start - 1] !== "\n" ? "\n" : "") + "---\n";
+      break;
+    case "codeblock":
+      replacement = "```\n" + (selected || "代码块") + "\n```";
+      if (!selected) { selectFrom = start + 4; selectTo = start + 7; }
+      break;
+    case "link":
+      replacement = "[" + (selected || "链接文字") + "](url)";
+      if (!selected) { selectFrom = start + 1; selectTo = start + 5; }
+      else { selectFrom = start + selected.length + 3; selectTo = start + selected.length + 6; }
+      break;
+    case "image":
+      replacement = "![" + (selected || "图片描述") + "](url)";
+      if (!selected) { selectFrom = start + 2; selectTo = start + 6; }
+      else { selectFrom = start + selected.length + 4; selectTo = start + selected.length + 7; }
+      break;
+    case "table":
+      replacement = "\n| 列1 | 列2 | 列3 |\n|-----|-----|-----|\n| 内容 | 内容 | 内容 |\n";
+      break;
+  }
+
+  document.execCommand("insertText", false, replacement);
+
+  if (selectFrom !== undefined) {
+    ta.setSelectionRange(selectFrom, selectTo);
+  }
+  ta.focus();
+  scheduleSave();
+}
+
+document.getElementById("md-toolbar").addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  const mdType = btn.dataset.md;
+  if (mdType) insertMD(mdType);
+});
+
 // --- Events ---
 editor.addEventListener("input", scheduleSave);
 titleInput.addEventListener("input", scheduleSave);

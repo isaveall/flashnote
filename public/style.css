@@ -166,6 +166,51 @@ body {
   text-align: right;
 }
 
+/* Markdown toolbar */
+#md-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 20px;
+  background: #f1f3f5;
+  border-bottom: 1px solid #dee2e6;
+  flex-wrap: wrap;
+  user-select: none;
+}
+
+#md-toolbar button {
+  height: 28px;
+  min-width: 28px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #495057;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#md-toolbar button:hover {
+  background: #dee2e6;
+  color: #1a1a2e;
+}
+
+#md-toolbar button:active {
+  background: #ced4da;
+}
+
+.md-sep {
+  width: 1px;
+  height: 18px;
+  background: #ced4da;
+  margin: 0 4px;
+}
+
 #editor {
   flex: 1;
   border: none;
@@ -251,6 +296,22 @@ body {
 
   #title-input {
     font-size: 18px;
+  }
+
+  #md-toolbar {
+    padding: 4px 8px;
+    gap: 1px;
+  }
+
+  #md-toolbar button {
+    height: 26px;
+    min-width: 24px;
+    padding: 0 4px;
+    font-size: 11px;
+  }
+
+  .md-sep {
+    margin: 0 2px;
   }
 
   #editor {
