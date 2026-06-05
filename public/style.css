@@ -15,8 +15,8 @@ body {
 /* Sidebar */
 #sidebar {
   width: 280px;
-  background: #1a1a2e;
-  color: #eee;
+  background: #8eb446;
+  color: #fff;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -27,7 +27,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 18px 16px;
-  border-bottom: 1px solid #16213e;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
 }
 
 #sidebar-header h1 {
@@ -41,15 +41,15 @@ body {
   height: 32px;
   border: none;
   border-radius: 6px;
-  background: #0f3460;
-  color: #eee;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
   font-size: 20px;
   cursor: pointer;
   transition: background 0.15s;
 }
 
 #new-note-btn:hover {
-  background: #1a5276;
+  background: rgba(255,255,255,0.35);
 }
 
 #search-box {
@@ -61,14 +61,14 @@ body {
   padding: 8px 10px;
   border: none;
   border-radius: 6px;
-  background: #16213e;
-  color: #eee;
+  background: rgba(255,255,255,0.25);
+  color: #fff;
   font-size: 13px;
   outline: none;
 }
 
 #search-input::placeholder {
-  color: #888;
+  color: rgba(255,255,255,0.6);
 }
 
 /* Note list */
@@ -90,12 +90,12 @@ body {
 }
 
 .note-item:hover {
-  background: #16213e;
+  background: rgba(255,255,255,0.15);
 }
 
 .note-item.active {
-  background: #0f3460;
-  border-left-color: #e94560;
+  background: rgba(255,255,255,0.25);
+  border-left-color: #fff;
 }
 
 .note-item .note-title {
