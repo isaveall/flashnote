@@ -241,52 +241,52 @@ function insertMD(type) {
   const currentLine = text.slice(lineStart, actualLineEnd);
 
   let replacement = "";
-  let cursorOffset = 0;
-  let selectFrom, selectTo;
+  let selStart = start, selEnd = end;
+  let newSelect = null; // [from, to] after insertion
 
   switch (type) {
-    // --- Headings ---
+    // --- Headings: replace current line ---
     case "h1": case "h2": case "h3": case "h4": case "h5": case "h6":
       const level = parseInt(type[1]);
       const prefix = "#".repeat(level) + " ";
       replacement = prefix + (selected || currentLine.replace(/^#{1,6} /, ""));
-      ta.setSelectionRange(lineStart, actualLineEnd);
+      selStart = lineStart; selEnd = actualLineEnd;
       break;
 
-    // --- Inline formatting ---
+    // --- Inline: wrap selection or insert placeholder ---
     case "bold":
-      replacement = "**" + (selected || "粗体文字") + "**";
-      if (!selected) { selectFrom = start + 2; selectTo = start + 6; }
+      if (selected) { replacement = "**" + selected + "**"; }
+      else { replacement = "**粗体文字**"; newSelect = [start + 2, start + 6]; }
       break;
     case "italic":
-      replacement = "*" + (selected || "斜体文字") + "*";
-      if (!selected) { selectFrom = start + 1; selectTo = start + 5; }
+      if (selected) { replacement = "*" + selected + "*"; }
+      else { replacement = "*斜体文字*"; newSelect = [start + 1, start + 5]; }
       break;
     case "strike":
-      replacement = "~~" + (selected || "删除文字") + "~~";
-      if (!selected) { selectFrom = start + 2; selectTo = start + 6; }
+      if (selected) { replacement = "~~" + selected + "~~"; }
+      else { replacement = "~~删除文字~~"; newSelect = [start + 2, start + 6]; }
       break;
     case "code":
-      replacement = "`" + (selected || "代码") + "`";
-      if (!selected) { selectFrom = start + 1; selectTo = start + 3; }
+      if (selected) { replacement = "`" + selected + "`"; }
+      else { replacement = "`代码`"; newSelect = [start + 1, start + 3]; }
       break;
 
-    // --- Block elements ---
+    // --- Block: prefix current line ---
     case "quote":
       replacement = "> " + (selected || currentLine.replace(/^> ?/, ""));
-      ta.setSelectionRange(lineStart, actualLineEnd);
+      selStart = lineStart; selEnd = actualLineEnd;
       break;
     case "ul":
       replacement = "- " + (selected || currentLine.replace(/^- /, ""));
-      ta.setSelectionRange(lineStart, actualLineEnd);
+      selStart = lineStart; selEnd = actualLineEnd;
       break;
     case "ol":
       replacement = "1. " + (selected || currentLine.replace(/^\d+\. /, ""));
-      ta.setSelectionRange(lineStart, actualLineEnd);
+      selStart = lineStart; selEnd = actualLineEnd;
       break;
     case "task":
       replacement = "- [ ] " + (selected || currentLine.replace(/^- \[[ x]\] /, ""));
-      ta.setSelectionRange(lineStart, actualLineEnd);
+      selStart = lineStart; selEnd = actualLineEnd;
       break;
 
     // --- Misc ---
@@ -294,30 +294,33 @@ function insertMD(type) {
       replacement = (start > 0 && text[start - 1] !== "\n" ? "\n" : "") + "---\n";
       break;
     case "codeblock":
-      replacement = "```\n" + (selected || "代码块") + "\n```";
-      if (!selected) { selectFrom = start + 4; selectTo = start + 7; }
+      if (selected) { replacement = "```\n" + selected + "\n```"; }
+      else { replacement = "```\n代码块\n```"; newSelect = [start + 4, start + 7]; }
       break;
     case "link":
-      replacement = "[" + (selected || "链接文字") + "](url)";
-      if (!selected) { selectFrom = start + 1; selectTo = start + 5; }
-      else { selectFrom = start + selected.length + 3; selectTo = start + selected.length + 6; }
+      if (selected) { replacement = "[" + selected + "](url)"; newSelect = [start + selected.length + 3, start + selected.length + 6]; }
+      else { replacement = "[链接文字](url)"; newSelect = [start + 1, start + 5]; }
       break;
     case "image":
-      replacement = "![" + (selected || "图片描述") + "](url)";
-      if (!selected) { selectFrom = start + 2; selectTo = start + 6; }
-      else { selectFrom = start + selected.length + 4; selectTo = start + selected.length + 7; }
+      if (selected) { replacement = "![" + selected + "](url)"; newSelect = [start + selected.length + 4, start + selected.length + 7]; }
+      else { replacement = "![图片描述](url)"; newSelect = [start + 2, start + 6]; }
       break;
     case "table":
       replacement = "\n| 列1 | 列2 | 列3 |\n|-----|-----|-----|\n| 内容 | 内容 | 内容 |\n";
       break;
   }
 
-  document.execCommand("insertText", false, replacement);
-
-  if (selectFrom !== undefined) {
-    ta.setSelectionRange(selectFrom, selectTo);
-  }
+  // Manual text insertion — works on all platforms including mobile Safari
+  ta.value = text.slice(0, selStart) + replacement + text.slice(selEnd);
   ta.focus();
+
+  if (newSelect) {
+    ta.setSelectionRange(newSelect[0], newSelect[1]);
+  } else {
+    const pos = selStart + replacement.length;
+    ta.setSelectionRange(pos, pos);
+  }
+
   scheduleSave();
 }
 
